@@ -3,7 +3,7 @@
 
 // but you're not, so you'll write it from scratch:
 
-var jsonTest = "{'name':'John','age':28,'isMarried':false,'isFriendly':true,'isAngry':'YES'}";
+var jsonTest = "{'name':'John','age':28,'isMarried':false,'isFriendly':true,'isAngry':'YES','height':1.90}";
 
 var parseJSON = function(json) {
   // your code goes here
@@ -19,18 +19,66 @@ var parseJSON = function(json) {
 
   var i = 0;
 
-	var nextChar = function() {
+  var nextChar = function() {
   	i++;
   }
+  var removeQuotesToString = function(str) {
+  	return str.slice(1, tempKey.length - 1);
+  }
+
+  var isString = function(str) {
+  	if((str[0] === '"' || str[0] === "'") && (str[str.length - 1] === '"' || str[str.length - 1] === "'")) {
+  		return true;
+  	} else {
+  		return false;
+  	}
+  }
+
+  var isBool = function(str) {
+  	return !isString(str) && (str.includes("false") || str.includes("true"));
+  }
+
+  var parseBoolean = function(str) {
+  	if(str === "false") {
+  		return false;
+  	} else {
+  		return true;
+  	}
+  }
+
+  var isInt = function(str) {
+  	var digits = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
+  	return !isString(str) && str[0] in digits && !str.includes(".");
+  }
+	var isFloat = function(str) {
+		var digits = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
+		return !isString(str) && str[0] in digits && str.includes(".");
+	}
+
+
+  var transformToCorrectType = function(valStr) {
+    if(isString(valStr)) {
+    	return removeQuotesToString(valStr);
+    } else if(isBool(valStr)) {
+    	return parseBoolean(valStr);
+    } else if(isInt(valStr)) {
+    	return parseInt(valStr);
+    } else if(isFloat(valStr)) {
+    	return parseFloat(valStr);
+    } else {
+    	return undefined;
+    }
+  }
+
 
 	var getKey = function() {
-		var tempKey = ""
+	  var tempKey = ""
 	  while(!(flagValue)) {
 	    if(parsedString[i] !== ":") {
 	      tempKey += parsedString[i];
 	    } else {
-	    	keys.push(tempKey);
-	    	tempKey = "";
+	      keys.push(removeQuotesToString(tempKey));
+	      tempKey = "";
 	      flagValue = true;
 	    }
 	    nextChar();
@@ -44,13 +92,13 @@ var parseJSON = function(json) {
 	  		if(parsedString[i] !== ",") {
 	  			tempValue += parsedString[i];
 	  		} else {
-	  			values.push(tempValue);
-	  			tempValue = "";
-	  			flagValue = false;
+	  			values.push(tempValue);	
+	  		  tempValue = "";
+	  		  flagValue = false;
 	  		} 
 
 	  		if(i >= parsedString.length - 1) {
-	  			values.push(tempValue);
+	  			values.push(tempValue);	
 	  			flagValue = false;
 	  			return;
 	  	  }
@@ -61,10 +109,27 @@ var parseJSON = function(json) {
 	  }
 	}
 
+	var wrapObject = function(vals, ks) {
+		var newObj = {};
+
+		ks.forEach(function(k, index) {
+			newObj[k] = transformToCorrectType(vals[index]);
+		});
+
+		return newObj;
+	}
+
   getKey();
 
-  return "values: " + values + " and keys: " + keys;
+  return wrapObject(values, keys);
 };
 
 console.log(parseJSON(jsonTest));
+
+
+
+
+
+
+
 
