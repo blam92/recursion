@@ -18,7 +18,7 @@ var parseJSON = function(json) {
   var parsedString = json.slice(1, json.length - 1);
 
   var i = 0;
-
+  /////utility functions /////
   var nextChar = function() {
   	i++;
   }
@@ -27,11 +27,14 @@ var parseJSON = function(json) {
   }
 
   var isString = function(str) {
-  	if((str[0] === '"' || str[0] === "'") && (str[str.length - 1] === '"' || str[str.length - 1] === "'")) {
-  		return true;
-  	} else {
-  		return false;
+  	for(var i = 0; i < str.length; i++) {
+		if(str[i] === "'" || str[i] === '"') {
+  			return true;
+  		} else if(str[i] !== " ") {
+  			return false;
+  		}
   	}
+  	return false;
   }
 
   var isBool = function(str) {
@@ -55,6 +58,9 @@ var parseJSON = function(json) {
 		return !isString(str) && str[0] in digits && str.includes(".");
 	}
 
+  // var isValueArrayObjectOrPrimitive = function(valStr) {
+  // 	if(valStr[1] === "[")
+  // }
 
   var transformToCorrectType = function(valStr) {
     if(isString(valStr)) {
@@ -70,6 +76,7 @@ var parseJSON = function(json) {
     }
   }
 
+//\\\\\\\utility functions \\\\\\\\
 
 	var getKey = function() {
 	  var tempKey = ""
@@ -109,6 +116,7 @@ var parseJSON = function(json) {
 	  }
 	}
 
+	//could be done when pushing keys/values to prevent an extra iteration.
 	var wrapObject = function(vals, ks) {
 		var newObj = {};
 
